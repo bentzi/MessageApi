@@ -10,7 +10,6 @@ namespace MessageApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class MessageController : ControllerBase
     {
         private readonly DataService _dataService;
@@ -31,7 +30,7 @@ namespace MessageApi.Controllers
         [HttpPost]
         public IActionResult AddMessage([FromBody] MessageDto messageDto, [FromHeader(Name = "UserId")] string userId, [FromHeader(Name = "Signature")] string clientSignature)
         {
-            // Secret key based on the user ID
+            // Retrieve the secret key based on the user ID
             string secretKey = GetServerSecretKey(userId);
             if (string.IsNullOrEmpty(secretKey))
             {
@@ -39,14 +38,17 @@ namespace MessageApi.Controllers
                 return Unauthorized();
             }
 
-            // Recreate the signature on the server
+            // Recreate the signature on the server, including the timestamp
             string data = $"{messageDto.Text}|{userId}|{messageDto.Timestamp}";
             using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secretKey)))
             {
                 var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(data));
                 string computedSignature = BitConverter.ToString(computedHash).Replace("-", "").ToLower();
 
-                // Compare the server-generated signature with the client-provided signature
+                _logger.LogInformation("Data used for HMAC: {Data}", data);
+                _logger.LogInformation("Computed Signature: {ComputedSignature}", computedSignature);
+                _logger.LogInformation("Client Signature: {ClientSignature}", clientSignature);
+
                 if (computedSignature != clientSignature)
                 {
                     _logger.LogWarning("Invalid signature for UserId: {UserId}", userId);
@@ -54,14 +56,7 @@ namespace MessageApi.Controllers
                 }
             }
 
-            // Additional check for replay attacks: Verify timestamp freshness
-            if (messageDto.Timestamp < DateTimeOffset.UtcNow.AddMinutes(-5).ToUnixTimeMilliseconds())
-            {
-                _logger.LogWarning("Stale message for UserId: {UserId}", userId);
-                return Unauthorized();
-            }
-
-            // Proceed to add the message if all checks pass
+            // Proceed to add the message if the signature is valid
             var message = new Message
             {
                 UserId = userId,
@@ -72,6 +67,9 @@ namespace MessageApi.Controllers
             _dataService.AddMessage(message);
             return Ok(message);
         }
+
+
+
 
         private string GetServerSecretKey(string userId)
         {

@@ -15,7 +15,7 @@ namespace MessageApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult CheckUser(string id)
+        public IActionResult Login(string id)
         {
             if (_dataService.CheckUser(id))
             {

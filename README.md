@@ -1,24 +1,26 @@
-# Message API Server
+## README.md
 
-## Overview
+### Project Overview
 
-The Message API Server is a backend application built with ASP.NET Core. It provides secure user authentication using JWT and endpoints for fetching and adding messages.
+This project is a backend service built with ASP.NET Core, designed to handle user authentication and message processing. The service allows users to securely send and retrieve messages, utilizing HMAC signatures to ensure the integrity and authenticity of the data exchanged.
 
-## Purpose
+### Features
 
-The main purpose of this project is to demonstrate a secure message handling system where users can authenticate, fetch, and add messages. The system ensures that only authenticated users can interact with the message endpoints, providing a secure communication channel.
+- **User Verification**: Validates users based on their unique ID.
+- **Message Handling**: Users can post and fetch messages with timestamps.
+- **Security**: Implements HMAC signatures for secure communication between the client and server.
 
-## Features
+### Getting Started
 
-- **User Authentication**: Secure login with JWT tokens.
-- **Message Handling**: Fetch and add messages.
-
-## Running the Server
-
-1. Clone the repository.
-2. Ensure you have .NET Core installed.
-3. Navigate to the project directory.
-4. Run the following commands:
-   ```sh
-   dotnet restore
+**Build and Run**:
+   ```bash
+   dotnet build
    dotnet run
+   ```
+
+### API Overview
+
+- **User Verification**: `/api/user/{id}` (GET)
+- **Post a Message**: `/api/message` (POST)
+- **Get Messages**: `/api/message` (GET)
+ 

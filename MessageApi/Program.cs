@@ -12,11 +12,7 @@ builder.Services.AddSingleton<DataService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Message API", Version = "v1" });
-
-
-    // Add custom header for UserId
-    c.OperationFilter<AddRequiredHeadersParameter>();
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Message API", Version = "v1" }); 
 });
 
 // Add CORS policy
@@ -48,24 +44,4 @@ app.UseCors("AllowSpecificOrigins");
 app.MapControllers();
 
 app.Run();
-
-// Add the OperationFilter to include headers in Swagger
-public class AddRequiredHeadersParameter : IOperationFilter
-{
-    public void Apply(OpenApiOperation operation, OperationFilterContext context)
-    {
-        if (operation.Parameters == null)
-            operation.Parameters = new List<OpenApiParameter>();
-
-        operation.Parameters.Add(new OpenApiParameter
-        {
-            Name = "UserId",
-            In = ParameterLocation.Header,
-            Required = true,
-            Schema = new OpenApiSchema
-            {
-                Type = "string"
-            }
-        });
-    }
-}
+ 

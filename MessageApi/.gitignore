@@ -1,6 +1,8 @@
 ﻿# Build Folders (you may need to keep bin if building directly on the server)
 bin/
 obj/
+./bin/
+./obj/
 
 # Rider projects
 .idea/
@@ -8,6 +10,7 @@ obj/
 # Visual Studio
 .vscode/
 .vs/
+./.vs/
 *.suo
 *.user
 *.userosscache
